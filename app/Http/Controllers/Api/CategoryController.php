@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Api;
 
 use App\Api\ApiMessages;
 use App\Model\Category;
-use App\Http\Requests\CategoryRequest;
 use App\Http\Controllers\Controller;
 use App\Validations\ValidationCategory;
 use Illuminate\Http\Request;
@@ -12,15 +11,15 @@ use Illuminate\Http\Request;
 class CategoryController extends Controller
 {
     /**
-	 * @var Category
-	 */
-	private $category;
-    private $validationCategory;
+     * @var Category
+     */
+	    private $category;
+      private $validationCategory;
 
 	public function __construct(Category $category, ValidationCategory $validationCategory)
 	{
-		$this->category = $category;
-        $this->validationCategory = $validationCategory;
+      $this->category = $category;
+      $this->validationCategory = $validationCategory;
 	}
 
     /**
@@ -30,8 +29,8 @@ class CategoryController extends Controller
      */
     public function index()
     {
-		$category = $this->category->paginate('10');
-		return response()->json($category, 200);
+        $category = $this->category->paginate('10');
+        return response()->json($category, 200);
     }
 
     /**
@@ -50,19 +49,19 @@ class CategoryController extends Controller
             return response()->json(['errors' => $erros], 401);
         }
 
-		try{
+        try {
 
-			$category = $this->category->create($data);
-			return response()->json([
-				'data' => [
-					'msg' => 'Categoria Cadastrada com Sucesso!'
-				]
-			], 200);
+          $category = $this->category->create($data);
+          return response()->json([
+            'data' => [
+              'msg' => 'Categoria Cadastrada com Sucesso!'
+            ]
+          ], 200);
 
-		} catch (\Exception $e) {
-			$message = new ApiMessages($e->getMessage());
-			return response()->json($message->getMessage(), 401);
-		}
+        } catch (\Exception $e) {
+          $message = new ApiMessages($e->getMessage());
+          return response()->json($message->getMessage(), 401);
+        }
     }
 
     /**
@@ -73,17 +72,23 @@ class CategoryController extends Controller
      */
     public function show($id)
     {
-		try{
+        $erros = $this->validationCategory->validateIdCategory($id, $this->category);
 
-			$category = $this->category->findOrFail($id);
-			return response()->json([
-				'data' => $category
-			], 200);
+        if ($erros) {
+            return response()->json(['errors' => $erros], 401);
+        }
 
-		} catch (\Exception $e) {
-			$message = new ApiMessages($e->getMessage());
-			return response()->json($message->getMessage(), 401);
-		}
+        try {
+
+            $category = $this->category->findOrFail($id);
+            return response()->json([
+              'data' => $category
+            ], 200);
+
+        } catch (\Exception $e) {
+            $message = new ApiMessages($e->getMessage());
+            return response()->json($message->getMessage(), 401);
+        }
     }
 
     /**
@@ -103,20 +108,20 @@ class CategoryController extends Controller
             return response()->json(['errors' => $erros], 401);
         }
 
-		try{
+        try {
 
-			$category = $this->category->findOrFail($id);
-			$category->update($data);
-			return response()->json([
-				'data' => [
-					'msg' => 'Categoria atualizada com sucesso!'
-				]
-			], 200);
+          $category = $this->category->findOrFail($id);
+          $category->update($data);
+          return response()->json([
+            'data' => [
+              'msg' => 'Categoria atualizada com sucesso!'
+            ]
+          ], 200);
 
-		} catch (\Exception $e) {
-			$message = new ApiMessages($e->getMessage());
-			return response()->json($message->getMessage(), 401);
-		}
+        } catch (\Exception $e) {
+          $message = new ApiMessages($e->getMessage());
+          return response()->json($message->getMessage(), 401);
+        }
     }
 
     /**
@@ -133,30 +138,30 @@ class CategoryController extends Controller
             return response()->json(['errors' => $erros], 401);
         }
 
-		try{
+        try {
 
-			$category = $this->category->findOrFail($id);
-			$category->delete();
-			return response()->json([
-				'data' => [
-					'msg' => 'Categoria Removida com Sucesso!'
-				]
-			], 200);
+          $category = $this->category->findOrFail($id);
+          $category->delete();
+          return response()->json([
+            'data' => [
+              'msg' => 'Categoria Removida com Sucesso!'
+            ]
+          ], 200);
 
-		} catch (\Exception $e) {
-			$message = new ApiMessages($e->getMessage());
-			return response()->json($message->getMessage(), 401);
-		}
+        } catch (\Exception $e) {
+          $message = new ApiMessages($e->getMessage());
+          return response()->json($message->getMessage(), 401);
+        }
     }
 
     public function realStates($id)
     {
-        try{
-			$category = $this->category->findOrFail($id);
-			return response()->json(['data' => $category->realStates], 200);
-		} catch (\Exception $e) {
-			$message = new ApiMessages($e->getMessage());
-			return response()->json($message->getMessage(), 401);
-		}
+        try {
+            $category = $this->category->findOrFail($id);
+            return response()->json(['data' => $category->realStates], 200);
+        } catch (\Exception $e) {
+          $message = new ApiMessages($e->getMessage());
+          return response()->json($message->getMessage(), 401);
+        }
     }
 }

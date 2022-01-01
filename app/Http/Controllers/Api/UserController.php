@@ -69,6 +69,12 @@ class UserController extends Controller
      */
     public function show($id)
     {
+        $erros = $this->validationUser->validateIdUser($id, $this->user);
+
+        if ($erros) {
+            return response()->json(['errors' => $erros], 401);
+        }
+        
         try {
 
             $user = $this->user->with('profile')->findOrFail($id);
@@ -127,6 +133,12 @@ class UserController extends Controller
      */
     public function destroy($id)
     {
+        $erros = $this->validationUser->validateIdUser($id, $this->user);
+
+        if ($erros) {
+            return response()->json(['errors' => $erros], 401);
+        }
+
         try {
 
             $user = $this->user->findOrFail($id);
