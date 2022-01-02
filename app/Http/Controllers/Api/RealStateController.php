@@ -5,15 +5,18 @@ namespace App\Http\Controllers\Api;
 use App\Api\ApiMessages;
 use App\Http\Controllers\Controller;
 use App\Model\RealState;
-use App\Http\Requests\RealStateRequest;
+use App\Validations\ValidationRealState;
+use Illuminate\Http\Request;
 
 class RealStateController extends Controller
 {
     private $realState;
+    private $validateRealState;
 
-    public function __construct(RealState $realState)
+    public function __construct(RealState $realState, ValidationRealState $validateRealState)
     {
         $this->realState = $realState;
+        $this->validateRealState = $validateRealState;
     }
 
     public function index()
@@ -22,10 +25,16 @@ class RealStateController extends Controller
         return response()->json($realState, 200);
     }
 
-    public function store(RealStateRequest $request)
+    public function store(Request $request)
     {
         $data = $request->all();
         $images = $request->file('images');
+
+        $erros = $this->validateRealState->validateRealState($data, $this->realState, null, $images);
+
+        if ($erros) {
+            return response()->json(['errors' => $erros], 401);
+        }
 
         try {
 
@@ -35,14 +44,13 @@ class RealStateController extends Controller
                 $realState->categories()->sync($data['categories']);
             }
 
-            if ($images) {
-                $imagesUploaded = [];
-                foreach ($images as $image) {
-                    $path = $image->store('images', 'public');
-                    $imagesUploaded[] = ['photo' => $path, 'is_thumb' => false];
-                }
-                $realState->photos()->createMany($imagesUploaded);
+            $imagesUploaded = [];
+            foreach ($images as $image) {
+                $path = $image->store('images', 'public');
+                $imagesUploaded[] = ['photo' => $path, 'is_thumb' => false];
             }
+            $realState->photos()->createMany($imagesUploaded);
+
             return response()->json(['data' => ['msg' => 'Imóvel Cadastrado com Sucesso!']], 200);
 
         } catch (\Exception $e) {
@@ -51,10 +59,16 @@ class RealStateController extends Controller
         }
     }
 
-    public function update($id, RealStateRequest $request)
+    public function update($id, Request $request)
     {
         $data = $request->all();
         $images = $request->file('images');
+
+        $erros = $this->validateRealState->validateRealState($data, $this->realState, null, $images);
+
+        if ($erros) {
+            return response()->json(['errors' => $erros], 401);
+        }
 
         try {
 
@@ -65,16 +79,15 @@ class RealStateController extends Controller
                 $realState->categories()->sync($data['categories']);
             }
 
-            if ($images) {
-                $imagesUploaded = [];
-                foreach ($images as $image) {
-                    $path = $image->store('images', 'public');
-                    $imagesUploaded[] = ['photo' => $path, 'is_thumb' => false];
-                }
-                $realState->photos()->createMany($imagesUploaded);
+            $imagesUploaded = [];
+            foreach ($images as $image) {
+                $path = $image->store('images', 'public');
+                $imagesUploaded[] = ['photo' => $path, 'is_thumb' => false];
             }
+            $realState->photos()->createMany($imagesUploaded);
 
             return response()->json(['data' => ['msg' => 'Imóvel Atualizado com Sucesso!']], 200);
+
         } catch (\Exception $e) {
             $message = new ApiMessages($e->getMessage());
             return response()->json($message->getMessage(), 401);
@@ -83,6 +96,12 @@ class RealStateController extends Controller
 
     public function destroy($id)
     {
+        $erros = $this->validateRealState->validateIdRealState($id, $this->realState);
+
+        if ($erros) {
+            return response()->json(['errors' => $erros], 401);
+        }
+
         try {
 
             $realState = $this->realState->findOrFail($id);
@@ -97,16 +116,16 @@ class RealStateController extends Controller
 
     public function show($id)
     {
+        $erros = $this->validateRealState->validateIdRealState($id, $this->realState);
+
+        if ($erros) {
+            return response()->json(['errors' => $erros], 401);
+        }
+
         try {
 
             $realState = $this->realState->with('photos')->findOrFail($id);
-
-            return response()->json([
-                'data' => [
-                    'msg' => 'Imóvel Atualizado com Sucesso!',
-                    'data' => $realState
-                    ]
-                ], 200);
+            return response()->json(['data' => ['data' => $realState]], 200);
 
         } catch (\Exception $e) {
             $message = new ApiMessages($e->getMessage());

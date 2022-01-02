@@ -13,13 +13,13 @@ class CategoryController extends Controller
     /**
      * @var Category
      */
-	    private $category;
-      private $validationCategory;
+    private $category;
+    private $validationCategory;
 
 	public function __construct(Category $category, ValidationCategory $validationCategory)
 	{
-      $this->category = $category;
-      $this->validationCategory = $validationCategory;
+        $this->category = $category;
+        $this->validationCategory = $validationCategory;
 	}
 
     /**

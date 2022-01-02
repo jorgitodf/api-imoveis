@@ -48,7 +48,7 @@ class ValidationUser
         $user = $model->where('id', $id)->first();
 
         if (!is_numeric($id) || $user === null) {
-            $this->erros['error-id'] = "Usuário não Encontrada!";
+            $this->erros['error-id'] = "Usuário não Encontrado!";
         }
 
         return $this->erros;
