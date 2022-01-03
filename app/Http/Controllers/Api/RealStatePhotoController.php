@@ -5,19 +5,30 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Model\RealStatePhoto;
 use App\Api\ApiMessages;
+use Illuminate\Support\Facades\Storage;
+use App\Validations\ValidationRealStatePhoto;
+
 
 class RealStatePhotoController extends Controller
 {
     private $realStatePhoto;
+    private $validationRealStatePhoto;
 
-    public function __construct(RealStatePhoto $realStatePhoto)
+    public function __construct(RealStatePhoto $realStatePhoto, ValidationRealStatePhoto $validationRealStatePhoto)
     {
         $this->realStatePhoto = $realStatePhoto;
+        $this->validationRealStatePhoto = $validationRealStatePhoto;
     }
 
     public function setThumb($photoId, $realStateId)
     {
         try {
+
+            $erros = $this->validationRealStatePhoto->validateIdRealStatePhoto($photoId, $realStateId, $this->realStatePhoto);
+
+            if ($erros) {
+                return response()->json(['errors' => $erros], 401);
+            }
 
             $photo = $this->realStatePhoto->where('real_state_id', $realStateId)->where('is_thumb', true);
 
@@ -39,6 +50,12 @@ class RealStatePhotoController extends Controller
     public function remove($photoId)
     {
         try {
+
+            $erros = $this->validationRealStatePhoto->validateIdRealPhotoState($photoId, $this->realStatePhoto);
+
+            if ($erros) {
+                return response()->json(['errors' => $erros], 401);
+            }
 
             $photo = $this->realStatePhoto->find($photoId);
 
