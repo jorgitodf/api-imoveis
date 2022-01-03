@@ -7,7 +7,7 @@ use App\Model\UserProfile;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Tymon\JwtAuth\Contracts\JWTSubject;
+use Tymon\JWTAuth\Contracts\JWTSubject;
 
 class User extends Authenticatable implements JWTSubject
 {
@@ -69,5 +69,4 @@ class User extends Authenticatable implements JWTSubject
     {
         return [];
     }
-}
 }

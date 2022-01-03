@@ -22,7 +22,7 @@ class ValidationUser
             $this->erros['error-email'] = "É necessário informar o E-mail do Usuário!";
         } else if (!filter_var($data['email'], FILTER_VALIDATE_EMAIL)) {
             $this->erros['error-email'] = "Informe um E-mail válido!";
-        } else if ($email === true && $action !== 'PUT') {
+        } else if ($email !== null && $email->email === $data['email'] && $action !== 'PUT') {
             $this->erros['error-email'] = "O E-mail informado já está cadastrado!";
         }
 
