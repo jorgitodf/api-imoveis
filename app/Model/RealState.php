@@ -27,6 +27,11 @@ class RealState extends Model
         return $this->hasMany(RealStatePhoto::class);
     }
 
+    public function address()
+    {
+        return $this->belongsTo(Adress::class);
+    }
+
     public function setTitleAttribute($value)
     {
         $this->attributes['title'] = trim(mb_convert_case($value, MB_CASE_TITLE, "UTF-8"));
